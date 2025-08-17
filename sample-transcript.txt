@@ -1,0 +1,23 @@
+Meeting: Q4 Planning Session
+Date: August 17, 2025
+Attendees: Sarah (PM), Mike (Engineering), Lisa (Design), Tom (Marketing)
+
+Sarah: Thanks everyone for joining. Let's start with our Q4 objectives. Mike, can you update us on the engineering roadmap?
+
+Mike: Sure. We're planning to complete the mobile app redesign by September 30th. The main challenges will be the new authentication system and performance optimizations. I'll need Lisa's design specs by September 1st to stay on track.
+
+Lisa: I can definitely deliver the designs by then. I'm also working on the user testing plan for the new onboarding flow. We should schedule user interviews for early September.
+
+Tom: From a marketing perspective, we're preparing the launch campaign for the Q4 product release. We need the final feature list by September 15th to finalize our messaging. Also, we should consider pushing the announcement to October to align with the industry conference.
+
+Sarah: Great points. Let me summarize our key action items:
+- Mike: Complete mobile app redesign by September 30th
+- Lisa: Deliver design specs by September 1st, schedule user interviews
+- Tom: Finalize marketing messaging by September 15th
+- Team: Consider moving announcement to October
+
+The main risk I see is the tight timeline for the mobile app. Mike, do you need additional resources?
+
+Mike: I think we're okay for now, but I'll flag any issues by September 10th if we're falling behind.
+
+Sarah: Perfect. Let's reconvene next week to check progress. Meeting adjourned.
