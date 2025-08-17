@@ -9,100 +9,135 @@
 - No content or error messages visible
 - Development server appears to be running
 
-**Causes & Solutions**:
+**Solutions**:
 
-#### A. React Version Compatibility
-The application was tested with React 18. If you see a blank page, check your React version:
-
+#### Clear Next.js Cache and Restart
 ```bash
-# Check current React version
-npm list react
-
-# If using React 19, downgrade to React 18
-npm install react@^18.2.0 react-dom@^18.2.0 @types/react@^18.2.0 @types/react-dom@^18.2.0
-```
-
-#### B. Development Server Not Starting Properly
-```bash
-# Stop any existing processes
-pkill -f "next dev"
-
+# Stop development server (Ctrl+C)
 # Clear Next.js cache
 rm -rf .next
 
-# Reinstall dependencies
-rm -rf node_modules package-lock.json
-npm install
-
-# Start development server
+# Restart development server
 npm run dev
 ```
 
-#### C. Port Conflicts
+#### Check Browser Console
+- Open browser Developer Tools (F12)
+- Look for JavaScript errors in Console tab
+- Check Network tab for failed requests
+
+#### Port Conflicts
 ```bash
 # Check if port 3000 is in use
-netstat -tlnp | grep :3000
+lsof -i :3000
 
-# If port is busy, kill the process or use a different port
+# Use different port if needed
 npm run dev -- -p 3001
-```
-
-#### D. TypeScript Compilation Errors
-```bash
-# Check for TypeScript errors
-npm run type-check
-
-# Check for build errors
-npm run build
 ```
 
 ### 2. API Errors (500 Internal Server Error)
 
 **Symptoms**:
-- Page loads but API calls fail
-- Error messages in browser console
-- Summarization or email features don't work
+- Summarization fails with error messages
+- Email sending doesn't work
+- API calls return 500 errors
 
 **Solutions**:
 
-#### A. Missing Environment Variables
-1. Copy the environment template:
+#### Missing Environment Variables
+1. Ensure `.env.local` exists:
    ```bash
    cp .env.sample .env.local
    ```
 
-2. Add your API keys to `.env.local`:
+2. Add required API keys:
    ```env
-   GROQ_API_KEY=your_groq_api_key_here
+   GOOGLE_API_KEY=your_google_ai_api_key_here
    RESEND_API_KEY=your_resend_api_key_here
+   EMAIL_FROM="Your App <noreply@yourdomain.com>"
    ```
 
-#### B. Invalid API Keys
-- Verify your Groq API key at [https://console.groq.com](https://console.groq.com)
-- Verify your Resend API key at [https://resend.com/api-keys](https://resend.com/api-keys)
+3. Restart development server after adding environment variables
+
+#### Invalid API Keys
+- **Google AI API**: Get valid key from [Google AI Studio](https://aistudio.google.com/app/apikey)
+- **Resend API**: Get valid key from [Resend Dashboard](https://resend.com/api-keys)
+- Test keys are working by making a simple API call
 
 ### 3. File Upload Issues
 
 **Symptoms**:
-- File upload doesn't work
-- Error messages about file type or size
+- File upload button doesn't respond
+- Error: "Invalid file type"
+- File content not being processed
 
 **Solutions**:
-- Only `.txt` files are supported (max 200KB)
-- Ensure file has proper `.txt` extension
-- Check file size: `ls -lh your-file.txt`
+- Only `.txt` files are supported
+- Maximum file size: 200KB
+- Ensure file has proper text content (not binary)
+- Try copy-pasting content instead of file upload
 
 ### 4. Email Sending Failures
 
 **Common Issues**:
-- Invalid email addresses
-- Missing email provider API keys
-- Rate limiting
+- "Failed to send email" error
+- Recipients not receiving emails
+- Invalid email format errors
 
 **Solutions**:
-- Verify email addresses are valid
-- Check API key configuration
-- Try with fewer recipients (max 20)
+- Verify recipient email addresses are valid
+- Check Resend API key is correct and has permissions
+- Ensure `EMAIL_FROM` domain is verified in Resend
+- Maximum 20 recipients per email
+- Check email content isn't too large (max 50KB)
+
+### 5. Build/TypeScript Errors
+
+**Symptoms**:
+- Build fails with TypeScript errors
+- Type checking errors in terminal
+
+**Solutions**:
+```bash
+# Check for TypeScript errors
+npx tsc --noEmit
+
+# Check for build issues
+npm run build
+
+# If using wrong Node.js version
+nvm use 18  # or node version manager you use
+```
+
+## Quick Debugging Steps
+
+### 1. Check Server Logs
+Look at terminal running `npm run dev` for error messages
+
+### 2. Test API Endpoints
+```bash
+# Test summarize endpoint
+curl -X POST http://localhost:3000/api/summarize \
+  -H "Content-Type: application/json" \
+  -d '{"transcriptText": "Test meeting content", "customPrompt": ""}'
+
+# Test email endpoint
+curl -X POST http://localhost:3000/api/send-email \
+  -H "Content-Type: application/json" \
+  -d '{"to": ["test@example.com"], "subject": "Test", "body": "Test content"}'
+```
+
+### 3. Verify Environment
+```bash
+# Check Node.js version (should be 18+)
+node --version
+
+# Check npm version
+npm --version
+
+# Check if environment variables are loaded
+echo $GOOGLE_API_KEY  # (will show in terminal)
+```
 
 ## Development Commands
 
@@ -110,56 +145,44 @@ npm run build
 # Start development server
 npm run dev
 
-# Build for production
+# Build for production  
 npm run build
 
-# Start production server
+# Start production build
 npm start
 
-# Run type checking
-npm run type-check
-
-# Run automated tests
-./test.sh
+# Clean install
+rm -rf node_modules package-lock.json && npm install
 ```
 
-## Getting Help
+## Complete Reset (Last Resort)
 
-1. **Check browser console** for JavaScript errors
-2. **Check terminal output** for server-side errors
-3. **Verify environment variables** are set correctly
-4. **Test API endpoints** directly using curl:
+If nothing else works:
 
 ```bash
-# Test summarize endpoint
-curl -X POST http://localhost:3000/api/summarize \
-  -H "Content-Type: application/json" \
-  -d '{"transcriptText": "Test meeting", "customPrompt": "Brief summary"}'
+# Remove all generated files
+rm -rf .next node_modules package-lock.json .env.local
 
-# Test email endpoint (will fail without API keys)
-curl -X POST http://localhost:3000/api/send-email \
-  -H "Content-Type: application/json" \
-  -d '{"to": ["test@example.com"], "subject": "Test", "body": "Test message"}'
+# Copy environment template
+cp .env.sample .env.local
+
+# Add your API keys to .env.local
+# Then reinstall and restart
+npm install
+npm run dev
 ```
 
 ## System Requirements
 
 - **Node.js**: 18.17.0 or higher
-- **npm**: 9.0.0 or higher
-- **OS**: Linux, macOS, or Windows
-- **Browser**: Modern browser with JavaScript enabled
+- **npm**: 9.0.0 or higher  
+- **Browser**: Chrome, Firefox, Safari, Edge (latest versions)
+- **API Keys**: Valid Google AI and Resend API keys
 
-## Quick Reset
+## Getting Help
 
-If all else fails, try a complete reset:
-
-```bash
-# Remove all generated files
-rm -rf .next node_modules package-lock.json
-
-# Reinstall everything
-npm install
-
-# Start fresh
-npm run dev
-```
+1. Check browser DevTools Console for client-side errors
+2. Check terminal output for server-side errors  
+3. Verify all environment variables are set correctly
+4. Test with minimal input first (short text, single email recipient)
+5. Check API provider status pages if issues persist
